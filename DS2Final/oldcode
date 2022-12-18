@@ -1,0 +1,103 @@
+ptpExploration code:
+
+    for(int i = 0; i < connections.size(); i++)
+    {
+        bool explored = false;
+        stack<graph*> copyOfPath = *path;
+        
+        for(int j = 0; j < path->size() ; j++)
+        {
+            if(connections[i] == copyOfPath.top())
+            {
+                explored = true;
+            }
+            copyOfPath.pop();
+        }
+        if(explored == false)
+        {
+            if(connections[i] == pointZ)
+            {
+                path->push(pointZ);
+            }else{
+                if(connections[i]->connections.size() > 1)
+                {
+                    connections[i]->ptpExploration(firstPath, secondPath, pointZ);
+                    firstPath->pop();
+                }
+            }
+        }else
+        {
+
+        }
+    }
+    
+   pair<stack<graph*>*, stack<graph*>*> graph::ptpExploration(stack<graph*> *path, stack<graph*> *checkedAgainstPath , graph* pointZ, bool *pointFound)
+{
+    if(*pointFound == false){
+        pair<stack<graph*>*, stack<graph*>*> returnedPair;
+        path->push(this);
+        int numOfExploredConnections = 0;
+        for(int i = 0; i < connections.size(); i++)
+        {
+            cout<<"looped" << endl;
+            stack<graph*> tempPath = *path;
+            stack<graph*> tempCheckedAgainstPath = *checkedAgainstPath;
+            bool connectionExplored = false;
+            for(int j = 0; j < checkedAgainstPath->size(); j++)
+            {
+                if(connections[i] == tempCheckedAgainstPath.top())
+                {
+                    if(tempCheckedAgainstPath.top() == pointZ)
+                    {
+                        path->push(pointZ);
+                        returnedPair = make_pair(path, checkedAgainstPath);
+                        *pointFound = true;
+                        return returnedPair;
+                    }
+                    connectionExplored = true;
+                    numOfExploredConnections++;
+                }
+                tempCheckedAgainstPath.pop();
+            }
+            for(int j = 0; j < path->size(); j++)
+            {
+                if(connections[j] == tempPath.top() && connectionExplored == false)
+                {
+                    connectionExplored = true;
+                    numOfExploredConnections++;
+                }
+                tempPath.pop();
+            }
+            if(connectionExplored == false)
+            {
+                if(connections[i] == pointZ)
+                {
+                    path->push(pointZ);
+                    returnedPair = make_pair(path, checkedAgainstPath);
+                    *pointFound = true;
+                    return returnedPair;
+                }else{
+                    if(connections[i]->connections.size() > 1)
+                    {
+                        connections[i]->ptpExploration(path, checkedAgainstPath, pointZ, pointFound);
+                        numOfExploredConnections++;
+                        path->pop();
+                    }else{
+                        numOfExploredConnections++;
+                    }
+                }
+            }
+        }
+
+        if(numOfExploredConnections == connections.size())
+        {
+            graph* addedNode = insert(2, false);
+            addedNode->addConnectionPath(connections[connections.size()-2]);
+            addedNode->ptpExploration(path, checkedAgainstPath, pointZ, pointFound);
+        }
+        returnedPair = make_pair(path, checkedAgainstPath);
+        return returnedPair;
+    }else{
+        return make_pair(path, checkedAgainstPath);
+    }
+}

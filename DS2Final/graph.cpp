@@ -10,9 +10,9 @@
 
 graph::graph()
 {
-    nodeType = 1;
+    nodeType = 2;
     nodeID = 1;
-    nodeName = (string) "router" + (string) "_" + to_string(nodeID);
+    nodeName = (string) "Switch" + (string) "_" + to_string(nodeID);
     isInfected = false;
 }
 
@@ -51,32 +51,31 @@ graph* graph::insert(int type, bool customName)
     if(type == 1 || type == 2 || type == 3 || type == 4)
     {
         graph* x = new graph;
-        
-        
-        
-        connections.insert(connections.cend(), x);
-        x->connections.insert(x->connections.cend(), this);
-        
+        vector<graph*>* allNodes = new vector<graph*>;
+        connections.push_back(x);
+        x->connections.push_back(this);
+        allNodes = completeExploration(allNodes);
+        x->nodeID = allNodes->size();
         switch (type)
         {
             case 1:
                 x->nodeType = 1;
-                x->nodeName = (string) "Router" + (string) "_" + to_string(nodeID);
+                x->nodeName = (string) "Router" + (string) "_" + to_string(x->nodeID);
                 break;
             
             case 2:
                 x->nodeType = 2;
-                x->nodeName = (string) "Switch" + (string) "_" + to_string(nodeID);
+                x->nodeName = (string) "Switch" + (string) "_" + to_string(x->nodeID);
                 break;
             
             case 3:
                 x->nodeType = 3;
-                x->nodeName = (string) "Server" + (string) "_" + to_string(nodeID);
+                x->nodeName = (string) "Server" + (string) "_" + to_string(x->nodeID);
                 break;
                 
             case 4:
                 x->nodeType = 4;
-                x->nodeName = (string) "PC" + (string) "_" + to_string(nodeID);
+                x->nodeName = (string) "PC" + (string) "_" + to_string(x->nodeID);
                 break;
                 
             default:
@@ -91,7 +90,6 @@ graph* graph::insert(int type, bool customName)
             
             x->changeNodeName(customTag);
         }
-        
         return x;
     }else{
         cout << "Please try again with a type value between 1 and 4" << endl;
@@ -202,7 +200,7 @@ void graph::getNodes()
     int graphSize = path->size();
     for(int i = 0; i < graphSize; i++)
     {
-        cout << "Element " << i+1 << " = " << path->at(i)<< ", # of connections = " << path->at(i)->connections.size() << ", isInfected = " << path->at(i)->isInfected<< endl;
+        cout << "Element " << i+1 << " = " << path->at(i)<< ", # of connections = " << path->at(i)->connections.size() << ", isInfected = " << path->at(i)->isInfected << ", nodeName = " << path->at(i)->nodeName << endl;
     }
 }
 
@@ -220,7 +218,7 @@ bool graph::runSimulation()
     cout << endl << "After Redundnacy Check: " << endl;
     checkConnections();
     getNodes();
-    cout << endl << "After Infection & Deletion of Infected Node: " << endl;
+    cout << endl << "After Infection & Deletion of Infected Node: Note*There will be a duplicate in the nodeID because it is set by the size and in this case it will have a duplicate because we remove one element*" << endl;
     remove();
     checkConnections();
     getNodes();
