@@ -6,9 +6,19 @@
 //
 
 #include <iostream>
+#include "graph.hpp"
 
-int main(int argc, const char * argv[]) {
-    // insert code here...
-    std::cout << "Hello, World!\n";
-    return 0;
+int main()
+{
+    graph* A = new graph;
+    graph* B = A->insert(2, false);
+    graph* C = B->insert(2, false);
+    graph* D = C->insert(2, false);
+    graph* F = B->insert(2, false);
+    graph* E = F->insert(2, false);
+    graph* G = C->insert(2, false);
+    graph* H = B->insert(2, false);
+    F->addConnectionPath(C);
+    F->addConnectionPath(D);
+    A->runSimulation();
 }
